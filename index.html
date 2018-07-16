@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/laydate/laydate.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            width: 1200px;
+            margin: 0 auto;
+        }
+
+        .wrapper .menu {
+            width: 600px;
+            text-align: center;
+            margin: 30px auto;
+        }
+
+        .mains {
+            float: left;
+        }
+        .main{
+            margin-left:50%;
+            transform: translateX(-50%);
+        }
+        .main1{
+        }
+        .main2{
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="wrapper">
+        <div class="menu">
+            <span class="m10 ml30">时间</span>
+            <input type="text" class="demo-input date" placeholder="请选择日期" id="dateStart">
+            <span class="m10">至</span>
+            <input type="text" class="demo-input date" placeholder="请选择日期" id="dateEnd">
+            <input id="search" type="button" value="查询">
+        </div>
+        <div class="mains main" id="main" style="width: 1000px;height:400px;"></div>
+        <div class="mains main1" id="main1" style="width: 600px;height:380px;"></div>
+        <div class="mains main2" id="main2" style="width: 600px;height:280px;"></div>
+    </div>
+    <script>
+        var dateStart = "", dateEnd = "";
+        var page = {
+            init: function () {
+                page.listen()
+                page.queryData()
+            },
+            listen: function () {
+                laydate.render({
+                    elem: "#dateStart",
+                    type: "datetime"
+                });
+                laydate.render({
+                    elem: "#dateEnd",
+                    type: "datetime"
+                });
+                $("#search").on("click", function () {
+                    dateStart = $("#dateStart").val()
+                    dateEnd = $("#dateEnd").val()
+                    console.log(dateStart, dateEnd)
+                    page.queryData(dateStart, dateEnd)
+                })
+
+                //原因分析
+                $.ajax({
+                    url:
+                        "http://192.168.1.240:8080/dfbinterface/mobile/gisshow/GetGisCountData4",
+                    type: "GET",
+                    dataType: 'jsonp',
+                    jsonp: 'callback',
+                    success: function (data) {
+                        // data = JSON.parse(data);
+                        page.myChart1(data.result[0]);
+                    },
+                    error: function (err) { }
+                });
+                //折线图
+                $.ajax({
+                    url: "http://192.168.1.240:8080/dfbinterface/mobile/gisshow/GetGisCountData6",
+                    type: "GET",
+                    dataType: 'jsonp',
+                    jsonp: 'callback',
+                    success: function (data) {
+                        page.myChart2(data.result);
+                    },
+                    error: function (err) { }
+                });
+            },
+            queryData: function (dateStart, dateEnd) {
+                $.ajax({
+                    url: "http://192.168.1.240:8080/dfbinterface/mobile/gisshow/GetGisCountData2",
+                    type: "GET",
+                    dataType: 'jsonp',
+                    jsonp: 'callback',
+                    data: {
+                        dateStart: dateStart,
+                        dateEnd: dateEnd
+                    },
+                    success: function (data) {
+                        page.queryEcharts(data)
+                    },
+                    error: function (err) {
+                    }
+                });
+            },
+            queryEcharts: function (data) {
+                var legendDataObj = data.result[0]
+                var legendData = [], handlingData = [], solvedData = [], suspendingData = [];
+                for (const index in legendDataObj) {
+                    legendData.push(legendDataObj[index].areaname)
+                    handlingData.push(legendDataObj[index].handling)
+                    solvedData.push(legendDataObj[index].solved)
+                    suspendingData.push(legendDataObj[index].suspending)
+                }
+
+                var myChart = echarts.init(document.getElementById('main'));
+                option = {
+                     title: {
+                        text: "深圳地面坍塌治理情况",
+                        x: 'center',
+                        align: 'right',
+                        textStyle: {
+                            fontSize: "22",
+                            verticalAlign: "bottom",
+                            fontWeight: "normal"
+                        }
+                    },
+                    color: ['#32B5EE', '#EF5757', '#F8A543'],
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        right:'10%',
+                        top:'2%',
+                        data: ["已治理", "未治理", "治理中"]
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            axisTick: { show: false },
+                            data: legendData
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '已治理',
+                            type: 'bar',
+                            barGap: 0,
+                            label: "",
+                            data: solvedData
+                        },
+                        {
+                            name: '未治理',
+                            type: 'bar',
+                            label: "",
+                            data: handlingData
+                        },
+                        {
+                            name: '治理中',
+                            type: 'bar',
+                            label: "",
+                            data: suspendingData
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            },
+            myChart1: function (data) {
+                var datas = [];
+                for (const key in data) {
+                    datas.unshift(data[key]);
+                }
+                var dataname = [],
+                    datacount = [];
+                for (let i = 0; i < datas.length; i++) {
+                    dataname.push(datas[i].dataname);
+                    if (datas[i].color == undefined) {
+                        datas[i].color = "";
+                    }
+                    datacount.push({
+                        value: datas[i].datacount,
+                        name: datas[i].dataname,
+                        itemStyle: { color: datas[i].color }
+                    });
+                }
+                console.log(datacount)
+                var myChart1 = echarts.init(document.getElementById("main1"));
+                option1 = {
+                    title: {
+                        text: "2018年度深圳市地面坍塌原因分析",
+                        textStyle: {
+                            // color: "#fefefe",
+                            fontSize: "22",
+                            verticalAlign: "bottom",
+                            fontWeight: "normal"
+                        }
+                    },
+                    tooltip: {
+                        trigger: "item",
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: "vertical",
+                        right: "20%",
+                        top: "10%",
+                        data: dataname,
+                        itemWidth: 40,
+                        itemHeight: 26,
+                        itemGap: 30,
+                        textStyle: {
+                            color: "#ffffff"
+                        }
+                    },
+                    series: [
+                        {
+                            name: "访问来源",
+                            type: "pie",
+                            radius: ["20%", "70%"],
+                            center: ["30%", "48%"],
+                            label: {
+                                normal: {
+                                    position: "inner",
+                                    formatter: "{d}%"
+                                }
+                            },
+                            data: datacount,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 50,
+                                    shadowOffsetX: 0,
+                                    shadowColor: "rgba(0, 0, 0, 0.5)"
+                                },
+                                normal: {
+                                    borderColor: "#ffffff",
+                                    borderWidth: 2
+                                }
+                            }
+                        }
+                    ]
+                };
+                myChart1.setOption(option1);
+            },
+            myChart2: function (data) {
+                console.log(data);
+                var yearsArr = [],
+                    datacountArr = [],
+                    solvedArr = [];
+                for (let i = 0; i < data.length; i++) {
+                    yearsArr.unshift(data[i].years);
+                    datacountArr.unshift(data[i].datacount);
+                    solvedArr.unshift(data[i].solved);
+                }
+                var myChart2 = echarts.init(document.getElementById("main2"));
+                option2 = {
+                    title: {
+                        text: "近6年深圳地面坍塌趋势分析",
+                        textStyle: {
+                            // color: "#efefef",
+                            fontSize: "22",
+                            verticalAlign: "bottom",
+                            fontWeight: "normal"
+                        }
+                    },
+                    xAxis: {
+                        type: "category",
+                        data: yearsArr,
+                        name: '年份',
+                        nameTextStyle: {
+                            // color: '#ffffff',
+                            align: 'right'
+                        },
+                        splitLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                color: "#000000"
+                            }
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                type: "solid",
+                                color: "#000000",
+                                width: "1"
+                            }
+                        }
+                    },
+                    yAxis: {
+                        type: "value",
+                        name: '灾害点情况',
+                        nameLocation: 'end',
+                        nameTextStyle: {
+                            color: '#000000',
+                            align: 'left'
+                        },
+                        splitLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                color: "#000000"
+                            }
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                type: "solid",
+                                color: "#000000",
+                                width: "1"
+                            }
+                        }
+                    },
+                    legend: {
+                        //图例组件
+                        data: ["灾害点", "已治理"],
+                        top: "0%",
+                        right: "0%",
+                        textStyle: {
+                            color: "#000000"
+                        }
+                    },
+                    grid: {
+                        left: "5%",
+                        right: "10%",
+                        bottom: "2%",
+                        top: "20%",
+                        containLabel: true
+                    },
+                    tooltip: {
+                        type: "line",
+                        lineStyle: {
+                            color: "#48b",
+                            width: 2,
+                            type: "solid"
+                        },
+                        textStyle: {
+                            color: "#fff"
+                        }
+                    },
+                    series: [
+                        {
+                            data: datacountArr,
+                            type: "line",
+                            name: "灾害点",
+                            smooth: true,
+                            itemStyle: { color: "#EF093A" }
+                        },
+                        {
+                            data: solvedArr,
+                            type: "line",
+                            name: "已治理",
+                            smooth: true,
+                            itemStyle: { color: "#19AAA2" }
+                        }
+                    ]
+                };
+                myChart2.setOption(option2);
+            }
+
+        }
+        page.init()
+
+
+    </script>
+</body>
+
+</html>
