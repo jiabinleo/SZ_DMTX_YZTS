@@ -48,9 +48,9 @@
             <input type="text" class="demo-input date" placeholder="请选择日期" id="dateEnd">
             <input id="search" type="button" value="查询">
         </div>
-        <div class="mains main" id="main" style="width: 1000px;height:400px;"></div>
-        <div class="mains main1" id="main1" style="width: 600px;height:380px;"></div>
-        <div class="mains main2" id="main2" style="width: 600px;height:280px;"></div>
+        <div class="mains main1" id="main1" style="width: 1000px;height:400px;"></div>
+        <div class="mains main2" id="main2" style="width: 600px;height:380px;"></div>
+        <div class="mains main3" id="main3" style="width: 600px;height:280px;"></div>
     </div>
     <script>
         var dateStart = "", dateEnd = "";
@@ -71,7 +71,6 @@
                 $("#search").on("click", function () {
                     dateStart = $("#dateStart").val()
                     dateEnd = $("#dateEnd").val()
-                    console.log(dateStart, dateEnd)
                     page.queryData(dateStart, dateEnd)
                 })
 
@@ -84,7 +83,7 @@
                     jsonp: 'callback',
                     success: function (data) {
                         // data = JSON.parse(data);
-                        page.myChart1(data.result[0]);
+                        page.myChart2(data.result[0]);
                     },
                     error: function (err) { }
                 });
@@ -95,7 +94,7 @@
                     dataType: 'jsonp',
                     jsonp: 'callback',
                     success: function (data) {
-                        page.myChart2(data.result);
+                        page.myChart3(data.result);
                     },
                     error: function (err) { }
                 });
@@ -126,9 +125,27 @@
                     solvedData.push(legendDataObj[index].solved)
                     suspendingData.push(legendDataObj[index].suspending)
                 }
-
-                var myChart = echarts.init(document.getElementById('main'));
-                option = {
+                var myChart1 = echarts.init(document.getElementById('main1'));
+                var seriesLabel = {
+                    normal: {
+                        show: true,
+                        textBorderColor: '#000',
+                        textStyle: {
+                            color: "#000"
+                        },
+                        textBorderWidth: 1,
+                        position:"top",
+                        formatter:function(params){
+                            if(params.value==0){
+                                return '';
+                            }else
+                            {
+                                return params.value;
+                            }
+                        }
+                    }
+                };
+                option1 = {
                      title: {
                         text: "深圳地面坍塌治理情况",
                         x: 'center',
@@ -168,27 +185,26 @@
                         {
                             name: '已治理',
                             type: 'bar',
-                            barGap: 0,
-                            label: "",
+                            label: seriesLabel,
                             data: solvedData
                         },
                         {
                             name: '未治理',
                             type: 'bar',
-                            label: "",
+                            label: seriesLabel,
                             data: handlingData
                         },
                         {
                             name: '治理中',
                             type: 'bar',
-                            label: "",
+                            label: seriesLabel,
                             data: suspendingData
                         }
                     ]
                 };
-                myChart.setOption(option);
+                myChart1.setOption(option1);
             },
-            myChart1: function (data) {
+            myChart2: function (data) {
                 var datas = [];
                 for (const key in data) {
                     datas.unshift(data[key]);
@@ -207,12 +223,11 @@
                     });
                 }
                 console.log(datacount)
-                var myChart1 = echarts.init(document.getElementById("main1"));
-                option1 = {
+                var myChart2 = echarts.init(document.getElementById("main2"));
+                option2 = {
                     title: {
                         text: "2018年度深圳市地面坍塌原因分析",
                         textStyle: {
-                            // color: "#fefefe",
                             fontSize: "22",
                             verticalAlign: "bottom",
                             fontWeight: "normal"
@@ -231,7 +246,7 @@
                         itemHeight: 26,
                         itemGap: 30,
                         textStyle: {
-                            color: "#ffffff"
+                            color: "#000"
                         }
                     },
                     series: [
@@ -254,16 +269,16 @@
                                     shadowColor: "rgba(0, 0, 0, 0.5)"
                                 },
                                 normal: {
-                                    borderColor: "#ffffff",
+                                    borderColor: "#fff",
                                     borderWidth: 2
                                 }
                             }
                         }
                     ]
                 };
-                myChart1.setOption(option1);
+                myChart2.setOption(option2);
             },
-            myChart2: function (data) {
+            myChart3: function (data) {
                 console.log(data);
                 var yearsArr = [],
                     datacountArr = [],
@@ -273,12 +288,11 @@
                     datacountArr.unshift(data[i].datacount);
                     solvedArr.unshift(data[i].solved);
                 }
-                var myChart2 = echarts.init(document.getElementById("main2"));
-                option2 = {
+                var myChart3 = echarts.init(document.getElementById("main3"));
+                option3 = {
                     title: {
                         text: "近6年深圳地面坍塌趋势分析",
                         textStyle: {
-                            // color: "#efefef",
                             fontSize: "22",
                             verticalAlign: "bottom",
                             fontWeight: "normal"
@@ -289,7 +303,6 @@
                         data: yearsArr,
                         name: '年份',
                         nameTextStyle: {
-                            // color: '#ffffff',
                             align: 'right'
                         },
                         splitLine: {
@@ -358,7 +371,7 @@
                             type: "solid"
                         },
                         textStyle: {
-                            color: "#fff"
+                            color: "#000"
                         }
                     },
                     series: [
@@ -378,7 +391,7 @@
                         }
                     ]
                 };
-                myChart2.setOption(option2);
+                myChart3.setOption(option3);
             }
 
         }
