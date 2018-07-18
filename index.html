@@ -16,24 +16,24 @@
         .wrapper {
             width: 1200px;
             margin: 0 auto;
+            overflow:hidden;
         }
-
-        .wrapper .menu {
+        .wrapper .left{
+            width:60%;
+            float:left;
+        }
+        .wrapper .left .menu {
             width: 600px;
             text-align: center;
             margin: 30px auto;
         }
-
+        .wrapper .right{
+            width:40%;
+            float:left;
+            padding-top: 27px;
+        }
         .mains {
             float: left;
-        }
-        .main{
-            margin-left:50%;
-            transform: translateX(-50%);
-        }
-        .main1{
-        }
-        .main2{
         }
     </style>
 </head>
@@ -41,16 +41,20 @@
 
 <body>
     <div class="wrapper">
-        <div class="menu">
-            <span class="m10 ml30">时间</span>
-            <input type="text" class="demo-input date" placeholder="请选择日期" id="dateStart">
-            <span class="m10">至</span>
-            <input type="text" class="demo-input date" placeholder="请选择日期" id="dateEnd">
-            <input id="search" type="button" value="查询">
+        <div class="left">
+            <div class="menu">
+                <span class="m10 ml30">时间</span>
+                <input type="text" class="demo-input date" placeholder="请选择日期" id="dateStart">
+                <span class="m10">至</span>
+                <input type="text" class="demo-input date" placeholder="请选择日期" id="dateEnd">
+                <input id="search" type="button" value="查询">
+            </div>
+            <div class="main1" id="main1" style="width: 800px;height:644px;"></div>
         </div>
-        <div class="mains main1" id="main1" style="width: 1000px;height:400px;"></div>
-        <div class="mains main2" id="main2" style="width: 600px;height:380px;"></div>
-        <div class="mains main3" id="main3" style="width: 600px;height:280px;"></div>
+        <div class="right">
+            <div class="mains main2" id="main2" style="width: 550px;height:380px;"></div>
+            <div class="mains main3" id="main3" style="width: 550px;height:280px;"></div>
+        </div>
     </div>
     <script>
         var dateStart = "", dateEnd = "";
@@ -152,7 +156,7 @@
                         align: 'right',
                         textStyle: {
                             fontSize: "22",
-                            verticalAlign: "bottom",
+                            verticalAlign: "top",
                             fontWeight: "normal"
                         }
                     },
@@ -165,7 +169,7 @@
                     },
                     legend: {
                         right:'10%',
-                        top:'2%',
+                        top:'5%',
                         data: ["已治理", "未治理", "治理中"]
                     },
                     calculable: true,
@@ -227,6 +231,7 @@
                 option2 = {
                     title: {
                         text: "2018年度深圳市地面坍塌原因分析",
+                        x: 'center',
                         textStyle: {
                             fontSize: "22",
                             verticalAlign: "bottom",
@@ -239,8 +244,8 @@
                     },
                     legend: {
                         orient: "vertical",
-                        right: "20%",
-                        top: "10%",
+                        right: "10%",
+                        top: "20%",
                         data: dataname,
                         itemWidth: 40,
                         itemHeight: 26,
@@ -292,6 +297,7 @@
                 option3 = {
                     title: {
                         text: "近6年深圳地面坍塌趋势分析",
+                        x: 'center',
                         textStyle: {
                             fontSize: "22",
                             verticalAlign: "bottom",
@@ -350,8 +356,8 @@
                     legend: {
                         //图例组件
                         data: ["灾害点", "已治理"],
-                        top: "0%",
-                        right: "0%",
+                        top: "8%",
+                        right: "15%",
                         textStyle: {
                             color: "#000000"
                         }
