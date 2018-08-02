@@ -12,32 +12,48 @@
             margin: 0;
             padding: 0;
         }
-
+        html,body{
+            height: 100%;
+        }
         .wrapper {
-            width: 1200px;
+            width: 100%;
+            height: 100%;
             margin: 0 auto;
-            overflow:hidden;
+            overflow: hidden;
         }
-        .wrapper .left{
-            width:60%;
-            float:left;
+
+        .wrapper .left {
+            width: 60%;
+            height: 100%;
+            float: left;
         }
+
         .wrapper .left .menu {
             width: 600px;
             text-align: center;
             margin: 30px auto;
         }
-        .wrapper .right{
-            width:40%;
-            float:left;
+
+        .wrapper .right {
+            width: 40%;
+            height: 100%;
+            float: left;
             padding-top: 27px;
         }
+
         .mains {
             float: left;
         }
+
+        .menu {
+            display: none;
+        }
+
+        .main1{
+            margin-top: 27px;
+        }
     </style>
 </head>
-
 
 <body>
     <div class="wrapper">
@@ -49,11 +65,11 @@
                 <input type="text" class="demo-input date" placeholder="请选择日期" id="dateEnd">
                 <input id="search" type="button" value="查询">
             </div>
-            <div class="main1" id="main1" style="width: 800px;height:644px;"></div>
+            <div class="main1" id="main1" style="width: 100%;height:98%;"></div>
         </div>
         <div class="right">
-            <div class="mains main2" id="main2" style="width: 550px;height:380px;"></div>
-            <div class="mains main3" id="main3" style="width: 550px;height:280px;"></div>
+            <div class="mains main2" id="main2" style="width: 100%;height:45%;"></div>
+            <div class="mains main3" id="main3" style="width: 100%;height:49%;"></div>
         </div>
     </div>
     <script>
@@ -138,19 +154,18 @@
                             color: "#000"
                         },
                         textBorderWidth: 1,
-                        position:"top",
-                        formatter:function(params){
-                            if(params.value==0){
+                        position: "top",
+                        formatter: function (params) {
+                            if (params.value == 0) {
                                 return '';
-                            }else
-                            {
+                            } else {
                                 return params.value;
                             }
                         }
                     }
                 };
                 option1 = {
-                     title: {
+                    title: {
                         text: "深圳地面坍塌治理情况",
                         x: 'center',
                         align: 'right',
@@ -168,8 +183,8 @@
                         }
                     },
                     legend: {
-                        right:'10%',
-                        top:'5%',
+                        right: '10%',
+                        top: '25px',
                         data: ["已治理", "未治理", "治理中"]
                     },
                     calculable: true,
@@ -226,7 +241,6 @@
                         itemStyle: { color: datas[i].color }
                     });
                 }
-                console.log(datacount)
                 var myChart2 = echarts.init(document.getElementById("main2"));
                 option2 = {
                     title: {
@@ -244,7 +258,7 @@
                     },
                     legend: {
                         orient: "vertical",
-                        right: "15%",
+                        right: "10%",
                         top: "20%",
                         data: dataname,
                         itemWidth: 40,
@@ -356,17 +370,17 @@
                     legend: {
                         //图例组件
                         data: ["灾害点", "已治理"],
-                        top: "8%",
-                        right: "15%",
+                        top: "25px",
+                        right: "40px",
                         textStyle: {
                             color: "#000000"
                         }
                     },
                     grid: {
-                        left: "5%",
-                        right: "10%",
-                        bottom: "2%",
-                        top: "20%",
+                        left: "10px",
+                        right: "60px",
+                        bottom: "10px",
+                        top: "70px",
                         containLabel: true
                     },
                     tooltip: {
